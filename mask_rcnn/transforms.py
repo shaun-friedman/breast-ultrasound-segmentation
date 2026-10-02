@@ -1,3 +1,6 @@
+# Vendored from pytorch/vision references/detection (BSD-3-Clause, (c) Soumith Chintala 2016).
+# Not modified apart from this header. See mask_rcnn/THIRD_PARTY.md.
+
 from typing import Dict, List, Optional, Tuple, Union
 
 import torch
