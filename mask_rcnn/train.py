@@ -68,7 +68,11 @@ def main() -> None:
 
     records = busi.discover(args.data_root)
     busi.verify_decodable(args.data_root, records)
-    split =busi.load_or_create_split(records, args.split_file, args.seed)
+    fingerprint = busi.dataset_fingerprint(args.data_root, records)
+    if fingerprint != busi.KAGGLE_SHA256:
+        print(f"WARNING: {args.data_root} differs from the pinned {busi.KAGGLE_HANDLE}; "
+              "results will not be comparable. Run mask_rcnn/download_data.py --force.")
+    split = busi.load_or_create_split(records, args.split_file, args.seed)
     train_ds = busi.BUSIDataset(args.data_root, busi.records_for(records, split, "train"),
                                 busi.get_transform(train=True))
     val_ds = busi.BUSIDataset(args.data_root, busi.records_for(records, split, "val"),
@@ -87,7 +91,8 @@ def main() -> None:
     config = {
         **{k: str(v) if isinstance(v, Path) else v for k, v in vars(args).items()},
         "split_sizes": {name: len(split[name]) for name in busi.SPLIT_NAMES},
-        "dataset_sha256": busi.dataset_fingerprint(args.data_root, records),
+        "dataset_sha256": fingerprint,
+        "dataset_source": busi.KAGGLE_HANDLE if fingerprint == busi.KAGGLE_SHA256 else "unverified",
         "git_commit": git_commit(),
         "python": platform.python_version(),
         "torch": torch.__version__,

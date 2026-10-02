@@ -26,6 +26,10 @@ from torchvision.transforms import v2 as T
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_DATA_ROOT = REPO_ROOT / "data" / "Dataset_BUSI_with_GT"
 
+# Pinned Kaggle source and the dataset_fingerprint() of its Dataset_BUSI_with_GT folder.
+KAGGLE_HANDLE = "aryashah2k/breast-ultrasound-images-dataset/versions/1"
+KAGGLE_SHA256 = "3c4fcbc471af85de5151894a326e3ec26b45ded07cc39bdca22d204b7796f773"
+
 CLASSES = ("normal", "benign", "malignant")
 # torchvision reserves label 0 for background, so normal images contribute no
 # instances rather than a "normal" label. num_classes therefore counts
