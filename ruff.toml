@@ -1,0 +1,19 @@
+target-version = "py39"
+line-length = 110
+src = ["mask_rcnn"]
+# Notebooks are archived coursework records (two are teammates' work), and the
+# torchvision helpers are vendored third-party code; neither is linted.
+extend-exclude = [
+    "*.ipynb",
+    "mask_rcnn/coco_eval.py",
+    "mask_rcnn/coco_utils.py",
+    "mask_rcnn/engine.py",
+    "mask_rcnn/transforms.py",
+    "mask_rcnn/utils.py",
+]
+
+[lint]
+select = ["E", "F", "W", "I", "B", "UP"]
+
+[lint.isort]
+known-first-party = ["busi", "coco_eval", "coco_utils", "engine", "evaluate", "transforms", "utils"]
