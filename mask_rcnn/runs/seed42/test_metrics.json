@@ -1,0 +1,81 @@
+{
+  "split": "test",
+  "n_images": 118,
+  "images_per_class": {
+    "normal": 20,
+    "benign": 66,
+    "malignant": 32
+  },
+  "coco": {
+    "bbox": {
+      "AP": 0.4768,
+      "AP50": 0.7294,
+      "AP75": 0.5984,
+      "AP_small": null,
+      "AP_medium": 0.4001,
+      "AP_large": 0.4615,
+      "AR1": 0.5921,
+      "AR10": 0.6719,
+      "AR100": 0.6719,
+      "AR_small": null,
+      "AR_medium": 0.6328,
+      "AR_large": 0.6712
+    },
+    "segm": {
+      "AP": 0.4751,
+      "AP50": 0.7144,
+      "AP75": 0.5084,
+      "AP_small": null,
+      "AP_medium": 0.3637,
+      "AP_large": 0.4739,
+      "AR1": 0.5904,
+      "AR10": 0.6716,
+      "AR100": 0.6716,
+      "AR_small": null,
+      "AR_medium": 0.6391,
+      "AR_large": 0.6811
+    }
+  },
+  "image_level": {
+    "score_threshold": 0.5,
+    "classes": [
+      "normal",
+      "benign",
+      "malignant"
+    ],
+    "confusion_matrix_rows_true_cols_pred": [
+      [
+        15,
+        3,
+        2
+      ],
+      [
+        6,
+        57,
+        3
+      ],
+      [
+        1,
+        8,
+        23
+      ]
+    ],
+    "lesion_sensitivity": {
+      "value": 0.9286,
+      "n": "91/98"
+    },
+    "normal_specificity": {
+      "value": 0.75,
+      "n": "15/20"
+    },
+    "malignant_sensitivity": {
+      "value": 0.7188,
+      "n": "23/32"
+    },
+    "accuracy_3class": {
+      "value": 0.8051,
+      "n": "95/118"
+    }
+  },
+  "dataset_sha256": "3c4fcbc471af85de5151894a326e3ec26b45ded07cc39bdca22d204b7796f773"
+}

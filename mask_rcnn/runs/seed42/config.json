@@ -1,0 +1,30 @@
+{
+  "data_root": "/home/sagemaker-user/breast-ultrasound-segmentation/data/Dataset_BUSI_with_GT",
+  "seed": 42,
+  "split_file": "/home/sagemaker-user/breast-ultrasound-segmentation/mask_rcnn/splits/busi_seed42.json",
+  "out": "/home/sagemaker-user/breast-ultrasound-segmentation/mask_rcnn/runs/seed42",
+  "epochs": 10,
+  "batch_size": 2,
+  "lr": 0.005,
+  "momentum": 0.9,
+  "weight_decay": 0.0005,
+  "lr_step": 3,
+  "lr_gamma": 0.1,
+  "workers": 2,
+  "device": "cuda",
+  "deterministic": false,
+  "no_pretrained": false,
+  "split_sizes": {
+    "train": 544,
+    "val": 118,
+    "test": 118
+  },
+  "dataset_sha256": "3c4fcbc471af85de5151894a326e3ec26b45ded07cc39bdca22d204b7796f773",
+  "dataset_source": "aryashah2k/breast-ultrasound-images-dataset/versions/1",
+  "git_commit": "cb190d4f6265610436629b99cf45782cf6f3ec29",
+  "python": "3.12.14",
+  "torch": "2.8.0",
+  "torchvision": "0.24.0",
+  "cuda_device": "NVIDIA A10G",
+  "command": "mask_rcnn/train.py"
+}
