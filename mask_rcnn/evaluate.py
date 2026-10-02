@@ -35,7 +35,7 @@ def parse_args() -> argparse.Namespace:
 
 def load_run(run: Path, data_root: Path | None, device: torch.device):
     config = json.loads((run / "config.json").read_text())
-    busi.seed_everything(config["seed"])
+    busi.seed_everything(config["seed"], config.get("deterministic", False))
     data_root = data_root or Path(config["data_root"])
     records = busi.discover(data_root)
     if busi.dataset_fingerprint(data_root, records) != config["dataset_sha256"]:

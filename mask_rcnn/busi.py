@@ -47,12 +47,14 @@ COCO_STAT_NAMES = (
 )
 
 
-def seed_everything(seed: int) -> None:
-    """Seed every RNG in play and request deterministic kernels.
+def seed_everything(seed: int, deterministic: bool = False) -> None:
+    """Seed every RNG in play and pick deterministic cuDNN kernels.
 
-    Must run before any CUDA work. Some Mask R-CNN CUDA kernels (e.g. RoIAlign
-    backward) have no deterministic implementation, so GPU runs can still differ
-    slightly; warn_only keeps training possible instead of raising.
+    Must run before any CUDA work. CPU runs are bit-reproducible either way.
+    On GPU, the RoIAlign backward pass uses atomic adds, so runs can differ
+    slightly unless `deterministic` is set. That flag makes torchvision switch to
+    a torch.compile'd RoIAlign, which needs a CUDA toolkit (nvcc, cuda.h) on the
+    machine and is slower; many hosted images (e.g. SageMaker) lack the toolkit.
     """
     os.environ.setdefault("CUBLAS_WORKSPACE_CONFIG", ":4096:8")
     random.seed(seed)
@@ -60,7 +62,9 @@ def seed_everything(seed: int) -> None:
     torch.manual_seed(seed)
     torch.cuda.manual_seed_all(seed)
     torch.backends.cudnn.benchmark = False
-    torch.use_deterministic_algorithms(True, warn_only=True)
+    torch.backends.cudnn.deterministic = True
+    if deterministic:
+        torch.use_deterministic_algorithms(True, warn_only=True)
 
 
 def seed_worker(worker_id: int) -> None:

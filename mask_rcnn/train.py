@@ -42,6 +42,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--lr-gamma", type=float, default=0.1)
     parser.add_argument("--workers", type=int, default=2)
     parser.add_argument("--device", default="auto")
+    parser.add_argument("--deterministic", action="store_true",
+                        help="bit-reproducible GPU runs; needs a CUDA toolkit (see busi.seed_everything)")
     parser.add_argument("--no-pretrained", action="store_true",
                         help="start from random weights instead of COCO (smoke tests only)")
     args = parser.parse_args()
@@ -62,7 +64,7 @@ def git_commit() -> str | None:
 
 def main() -> None:
     args = parse_args()
-    busi.seed_everything(args.seed)
+    busi.seed_everything(args.seed, args.deterministic)
     device = busi.pick_device(args.device)
     args.out.mkdir(parents=True, exist_ok=True)
 
