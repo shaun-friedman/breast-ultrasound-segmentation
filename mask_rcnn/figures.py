@@ -51,7 +51,7 @@ def main() -> None:
     chosen = [r for cls in busi.CLASSES for r in [t for t in test if t["class"] == cls][:args.per_class]]
     dataset = busi.BUSIDataset(data_root, chosen, busi.get_transform(train=False))
 
-    fig, axes = plt.subplots(len(chosen), 3, figsize=(12, 4 * len(chosen)), squeeze=False)
+    fig, axes = plt.subplots(len(chosen), 3, figsize=(12, 4 * len(chosen) + 4), squeeze=False)
     for row, (rec, ax) in enumerate(zip(chosen, axes)):
         img, target = dataset[row]
         pred = model([img.to(device)])[0]
