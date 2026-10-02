@@ -67,7 +67,8 @@ def main() -> None:
     args.out.mkdir(parents=True, exist_ok=True)
 
     records = busi.discover(args.data_root)
-    split = busi.load_or_create_split(records, args.split_file, args.seed)
+    busi.verify_decodable(args.data_root, records)
+    split =busi.load_or_create_split(records, args.split_file, args.seed)
     train_ds = busi.BUSIDataset(args.data_root, busi.records_for(records, split, "train"),
                                 busi.get_transform(train=True))
     val_ds = busi.BUSIDataset(args.data_root, busi.records_for(records, split, "val"),

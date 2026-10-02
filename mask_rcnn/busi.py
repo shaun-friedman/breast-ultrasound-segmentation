@@ -76,7 +76,10 @@ def discover(data_root: Path) -> list[dict]:
         class_dir = Path(data_root) / cls
         if not class_dir.is_dir():
             raise FileNotFoundError(f"Expected class folder {class_dir}")
-        files = sorted(f for f in os.listdir(class_dir) if f.endswith(".png"))
+        # Skip hidden files such as macOS "._name.png" metadata left by some archivers.
+        files = sorted(
+            f for f in os.listdir(class_dir) if f.endswith(".png") and not f.startswith(".")
+        )
         for name in files:
             if "_mask" in name:
                 continue
@@ -90,6 +93,28 @@ def discover(data_root: Path) -> list[dict]:
                 "class": cls,
             })
     return records
+
+
+def verify_decodable(data_root: Path, records: list[dict]) -> None:
+    """Decode every image and mask once before training.
+
+    A file the decoder rejects otherwise surfaces mid-epoch as an opaque error
+    inside a DataLoader worker; here every bad file is named at once.
+    """
+    counts = {cls: sum(r["class"] == cls for r in records) for cls in CLASSES}
+    print(f"Found {len(records)} images {counts} (BUSI publishes 780: 133/437/210)")
+    bad = []
+    for rec in records:
+        files = [(rec["image"], ImageReadMode.RGB)] + [(m, ImageReadMode.GRAY) for m in rec["masks"]]
+        for rel, mode in files:
+            try:
+                read_image(str(Path(data_root) / rel), mode=mode)
+            except (RuntimeError, ValueError, OSError) as err:
+                bad.append(f"{rel}: {str(err).strip() or type(err).__name__}")
+    if bad:
+        raise RuntimeError(
+            f"{len(bad)} file(s) under {data_root} could not be decoded:\n  " + "\n  ".join(bad)
+        )
 
 
 def dataset_fingerprint(data_root: Path, records: list[dict]) -> str:
