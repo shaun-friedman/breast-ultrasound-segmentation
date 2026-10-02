@@ -36,11 +36,18 @@ def parse_args() -> argparse.Namespace:
 def load_run(run: Path, data_root: Path | None, device: torch.device):
     config = json.loads((run / "config.json").read_text())
     busi.seed_everything(config["seed"], config.get("deterministic", False))
-    data_root = data_root or Path(config["data_root"])
+    # config.json holds the training machine's absolute paths; fall back to this
+    # checkout's copies so a committed run can be evaluated anywhere.
+    recorded_root = Path(config["data_root"])
+    data_root = data_root or (recorded_root if recorded_root.exists() else busi.DEFAULT_DATA_ROOT)
     records = busi.discover(data_root)
     if busi.dataset_fingerprint(data_root, records) != config["dataset_sha256"]:
         raise ValueError(f"Dataset at {data_root} differs from the one this run was trained on")
-    split = busi.load_or_create_split(records, Path(config["split_file"]), config["seed"])
+    split_file = Path(config["split_file"])
+    if not split_file.exists():
+        split_file = Path(__file__).resolve().parent / "splits" / split_file.name
+    # Never create a split here: evaluation must use the one the model was trained against.
+    split = busi.load_split(records, split_file, config["seed"])
     model = busi.get_model(pretrained=False)
     model.load_state_dict(torch.load(run / "model_final.pth", map_location="cpu", weights_only=True))
     model.to(device).eval()

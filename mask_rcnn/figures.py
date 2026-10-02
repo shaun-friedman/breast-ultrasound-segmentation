@@ -74,7 +74,7 @@ def main() -> None:
             a.axis("off")
 
     fig.suptitle(f"Mask R-CNN on held-out BUSI test images (score >= {args.score_threshold})")
-    fig.tight_layout()
+    fig.tight_layout(rect=(0, 0, 1, 0.985))  # leave room for the suptitle
     args.out.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(args.out, dpi=110)
     print(f"Wrote {args.out}")

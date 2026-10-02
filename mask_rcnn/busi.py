@@ -159,21 +159,27 @@ def make_split(records: list[dict], seed: int, fractions: dict = DEFAULT_FRACTIO
     }
 
 
+def load_split(records: list[dict], split_file: Path, seed: int) -> dict:
+    """Load a saved split and check it matches the seed and the dataset on disk."""
+    split_file = Path(split_file)
+    split = json.loads(split_file.read_text())
+    if split["seed"] != seed:
+        raise ValueError(f"{split_file} was made with seed {split['seed']}, not {seed}")
+    listed = {img for name in SPLIT_NAMES for img in split[name]}
+    found = {r["image"] for r in records}
+    if listed != found:
+        raise ValueError(
+            f"{split_file} does not match the dataset on disk "
+            f"({len(listed - found)} listed but missing, {len(found - listed)} unlisted)"
+        )
+    return split
+
+
 def load_or_create_split(records: list[dict], split_file: Path, seed: int) -> dict:
     """Reuse a saved split so every run and script sees identical partitions."""
     split_file = Path(split_file)
     if split_file.exists():
-        split = json.loads(split_file.read_text())
-        if split["seed"] != seed:
-            raise ValueError(f"{split_file} was made with seed {split['seed']}, not {seed}")
-        listed = {img for name in SPLIT_NAMES for img in split[name]}
-        found = {r["image"] for r in records}
-        if listed != found:
-            raise ValueError(
-                f"{split_file} does not match the dataset on disk "
-                f"({len(listed - found)} listed but missing, {len(found - listed)} unlisted)"
-            )
-        return split
+        return load_split(records, split_file, seed)
     split = make_split(records, seed)
     split_file.parent.mkdir(parents=True, exist_ok=True)
     split_file.write_text(json.dumps(split, indent=1) + "\n")
